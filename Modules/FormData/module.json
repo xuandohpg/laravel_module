@@ -1,0 +1,13 @@
+{
+    "name": "FormData",
+    "alias": "formdata",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FormData\\Providers\\FormDataServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

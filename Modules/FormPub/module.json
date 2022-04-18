@@ -1,0 +1,13 @@
+{
+    "name": "FormPub",
+    "alias": "formpub",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FormPub\\Providers\\FormPubServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
