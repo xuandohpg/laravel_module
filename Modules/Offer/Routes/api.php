@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\DB;
 |
 */
 
-Route::middleware('auth:api')->get('/offer', function (Request $request) {
-    return $request->user();
-});
 
 Route::post('offer', [OfferController::class, 'index']);
 

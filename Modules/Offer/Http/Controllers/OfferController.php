@@ -13,20 +13,6 @@ use Illuminate\Support\Str;
 
 class OfferController extends Controller
 {
-        // return 'okkkk';
-        // $name=$request->input('name');
-        // $tags=$request->input('tags');
-        // $country=$request->input('country');
-        // $ar=$request->input('ar');
-        // $age=$request->input('age');
-        // $budget=$request->input('budget');
-        // $conversion_rate=$request->input('conversion_rate');
-        // $social_network=$request->input('social_network');
-        // $link_landing=$request->input('link_landing');
-        // $exp=$request->input('exp');
-        // $payout=$request->input('payout');
-        // $priority=$request->input('priority');
-        // $link_image=$request->input('link_image');
 
 
 
@@ -90,7 +76,7 @@ class OfferController extends Controller
             $price_start = 60;
             $price_end = 70;
         }
-//        if(!empty($tags) && !empty($country) && !empty($age) && !empty($budget) && !empty($social_network) && !empty($exp) &&!empty($payout)){
+
         if ($age <= 30) {
             $age_start = 20;
             $age_end = 30;
@@ -120,18 +106,13 @@ class OfferController extends Controller
             if($exp==1) $exp="1 năm";
             if($exp==2) $exp="2 năm";
         }
-        //  echo $exp."<hr>";
-        //  echo $price."<hr>";
-        //  echo $price_start."<hr>";
-        //  echo $price_end."<hr>";
         $offer = Offer::where([
             ["country", "LIKE", "%{$country}%"],
             ["traffic_network", "LIKE", "%{$traffic_network}%"],
-            ["tags", "LIKE", "%{$tags}%"],
+            ["tags", "=", "{$tags}"],
             ["exp", "LIKE", "%{$exp}%"],
-        ])->whereBetween('age', [$age_start, $age_end])->whereBetween('price',[$price_start,$price_end])->where('scale',"{$scale}")->orderBy('priority', 'asc')->get();
+        ])->whereBetween('age', [[$age_start, $age_end]])->whereBetween('price',[$price_start,$price_end])->where('scale',"{$scale}")->orderBy('priority', 'asc')->get();
 
-        // dd($request);
 
         return  response()->json($offer);
     }
@@ -248,23 +229,15 @@ class OfferController extends Controller
         }
 
 
-        if($scale=='all'){
-            $offer = Offer::where([
-                ["country", "LIKE", "%{$country}%"],
-                ["traffic_network", "LIKE", "%{$traffic_network}%"],
-                ["tags", "LIKE", "%{$tags}%"],
-                ["exp", "LIKE", "%{$exp}%"],
-            ])->whereBetween('age', [$age_start, $age_end])->whereBetween('price',[$price_start,$price_end])->orderBy('priority', 'asc')->get();
-        }
-        else{
+
 
             $offer = Offer::where([
                 ["country", "LIKE", "%{$country}%"],
                 ["traffic_network", "LIKE", "%{$traffic_network}%"],
-                ["tags", "LIKE", "%{$tags}%"],
+                ["tags", "=", "{$tags}"],
                 ["exp", "LIKE", "%{$exp}%"],
             ])->whereBetween('age', [$age_start, $age_end])->whereBetween('price',[$price_start,$price_end])->where('scale',"{$scale}")->orderBy('priority', 'asc')->get();
-        }
+
 
         if (count($offer) <= 3) {
             $result = $offer;
