@@ -63,7 +63,7 @@ class OfferController extends Controller
         else if($type==2){
             $type="cpl";
         }else if($type==3){
-            $type=="cps";
+            $type="cps";
         }
         $offer=Offer::whereIn("traffic_network",$traffic)
             ->whereIn("tags",$tags)
@@ -72,101 +72,73 @@ class OfferController extends Controller
                 ['exp',"=","{$exp}"],
                 ['type',"=","{$type}"]
             ])
+            ->orderBy('priority', 'asc')
             ->get();
 
+        $offer_check=[];
         $result=[];
         $countAge=count($age);
         if($countAge==1){
             foreach ($offer as $item){
                 if($item['age']>=20 && $item['age']<=35 && in_array(1,$age)){
-                    $result[]=$item;
+                    $offer_check[]=$item;
                 }
                 else if($item['age']>=35 && $item['age']<=45 && in_array(2,$age)){
-                    $result[]=$item;
+                    $offer_check[]=$item;
                 }
                 else if($item['age']>=45 && $item['age']<=100 && in_array(3,$age)){
-                    $result[]=$item;
+                    $offer_check[]=$item;
                 }
             }
         }
         else if($countAge==2){
             foreach ($offer as $item){
                 if(in_array(1,$age) && in_array(2,$age) && $item['age']>=20 && $item['age']<=45){
-                    $result[]=$item;
+                    $offer_check[]=$item;
                 }
                 else if(in_array(1,$age) && in_array(3,$age)){
                     if($item['age']>=20 && $item['age']<=35 || $item['age']>=45 && $item['age']<=100){
-                        $result[]=$item;
+                        $offer_check[]=$item;
                     }
                 }
                 else if(in_array(2,$age) && in_array(3,$age) && $item['age']>=45 && $item['age']<=100){
-                    $result[]=$item;
+                    $offer_check[]=$item;
                 }
             }
         }
-//        echo "<pre>";
-//        print_r($offer);
-//        echo "------------------------------------";
-//        print_r($result);
+        else{
+            $offer_check=$offer;
+        }
+        
+        if(count($offer_check)>=1 && count($offer_check)<=3){
+            $result=$offer_check;
+        }
+        else if(count($offer_check)>3){
+            $offer_priority = [];
+            $offer_no_priority = [];
+            foreach ($offer as $item) {
+                if ($item['priority'] != 10) {
+                    $offer_priority[] = $item;
+                } else {
+                    $offer_no_priority[] = $item;
+                }
+            }
+            if(count($offer_priority)>=1 && count($offer_priority)>=3){
 
-        return $result;
+            }
 
-//        for($i=0;$i<$countAge;$i++){
-//            if($age[$i]['id']==$i+1){
-//                $age[$i]['isActive']=true;
-//            }
-//        }
-//        if($countAge==1){
-//            $offer=Offer::whereIn("traffic_network",$traffic)
-//                ->where([
-//                    ['exp',"=","{$exp}"]
-//                ])
-//                ->whereBetween('age',[20,35])
-//                ->orwhereBetween('age',[35,40])
-//                ->get();
+            print_r($offer_priority);
+            echo "--------------------------------------------------------------------------------------------------";
+            print_r($offer_no_priority);
+        }
+    
 
-//            $offer=Offer::whereIn("traffic_network",$traffic)
-//                ->where([
-//                    ['exp',"=","{$exp}"]
-//                ])
-//                ->whereBetween('age',$age[0]['value'])
-//                ->get();
-//        }
-//        else if($countAge==2){
-//
-//        }
-
-//        foreach ($age as $item){
-//            if($item==1){
-//                $isCheckAge1=true;
-//                $item['isActive']=true;
-//            }
-//            else if($item==2){
-//                $isCheckAge2=true;
-//            }
-//            else if($item==3){
-//                $isCheckAge3=true;
-//            }
-//        }
-//        if($countAge==1){
-//            echo "chi co mot";
-//        }
-//        return $age;
+       
 
 
-//        $offer=Offer::whereIn("traffic_network",$traffic)
-//            ->where([
-//                ['exp',"=","{$exp}"]
-//            ])
-//            ->whereBetween('age',[[35,40],[20,35]])
-//            ->get();
 
-//        ["traffic_network", "LIKE", "%{$traffic_network}%"],
-//        dd($request);
+        // return $offer_check;
 
-//        return $request->input('tags');
-
-//        $result=$offer;
 //        return  response()->json($result);
 
     }
