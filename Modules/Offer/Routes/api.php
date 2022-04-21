@@ -25,4 +25,4 @@ Route::get('formPub',function (){
     return $formPub=DB::table('form_pub')->get();
 });
 
-Route::post('offer/demo',[OfferController::class,'demo']);
+Route::get('offer/demo',[OfferController::class,'demo']);

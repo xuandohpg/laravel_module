@@ -38,83 +38,137 @@ class OfferController extends Controller
 
     function demo(Request $request)
     {
-        $tags = $request->input('tags');
-        $country = $request->input('country');
-        $age = $request->input('age');
-        $traffic_network = $request->input('traffic_network');
-        $exp = $request->input('exp');
-        $scale=$request->input('scale');
-        $price=$request->input('price');
+        $traffic=$request->traffic;
+        $exp=$request->exp;
+        $age=$request->age;
+        $tags=$request->tags;
+        $country=$request->country;
+        $quantity=$request->quantity;
+        $payout=$request->payout;
+        $type=$request->type;
 
-
-        if($price<=10){
-            $price_start = 0;
-            $price_end = 10;
+        if($exp=='1'){
+            $exp='newbie';
         }
-        else if($price<=20){
-            $price_start = 10;
-            $price_end = 20;
+        else if($exp=='2'){
+            $exp='experience';
         }
-
-        else if($price<=30){
-            $price_start = 20;
-            $price_end = 30;
-        }
-        else if($price<=40){
-            $price_start = 30;
-            $price_end = 40;
-        }
-        else if($price<=50){
-            $price_start = 40;
-            $price_end = 50;
-        }
-        else if($price<=60){
-            $price_start = 50;
-            $price_end = 60;
-        }
-        else if($price<=70){
-            $price_start = 60;
-            $price_end = 70;
+        else if($exp=='3'){
+            $exp='expert';
         }
 
-        if ($age <= 30) {
-            $age_start = 20;
-            $age_end = 30;
-
-        } else if ($age <= 40) {
-            $age_start = 30;
-            $age_end = 40;
-
-        } else if ($age <= 50) {
-            $age_start = 40;
-            $age_end = 50;
-        } else if ($age <= 60) {
-            $age_start = 50;
-            $age_end = 60;
-        } else if ($age <= 70) {
-            $age_start = 60;
-            $age_end = 70;
-        } else {
-            $age_start = 1;
-            $age_end = 100;
+        if($type==1){
+            $type="cpa";
         }
-
-        if (empty($exp)) {
-            $exp = '';
+        else if($type==2){
+            $type="cpl";
+        }else if($type==3){
+            $type=="cps";
         }
-        else{
-            if($exp==1) $exp="1 năm";
-            if($exp==2) $exp="2 năm";
+        $offer=Offer::whereIn("traffic_network",$traffic)
+            ->whereIn("tags",$tags)
+            ->whereIn("country",$country)
+            ->where([
+                ['exp',"=","{$exp}"],
+                ['type',"=","{$type}"]
+            ])
+            ->get();
+
+        $result=[];
+        $countAge=count($age);
+        if($countAge==1){
+            foreach ($offer as $item){
+                if($item['age']>=20 && $item['age']<=35 && in_array(1,$age)){
+                    $result[]=$item;
+                }
+                else if($item['age']>=35 && $item['age']<=45 && in_array(2,$age)){
+                    $result[]=$item;
+                }
+                else if($item['age']>=45 && $item['age']<=100 && in_array(3,$age)){
+                    $result[]=$item;
+                }
+            }
         }
-        $offer = Offer::where([
-            ["country", "LIKE", "%{$country}%"],
-            ["traffic_network", "LIKE", "%{$traffic_network}%"],
-            ["tags", "=", "{$tags}"],
-            ["exp", "LIKE", "%{$exp}%"],
-        ])->whereBetween('age', [[$age_start, $age_end]])->whereBetween('price',[$price_start,$price_end])->where('scale',"{$scale}")->orderBy('priority', 'asc')->get();
+        else if($countAge==2){
+            foreach ($offer as $item){
+                if(in_array(1,$age) && in_array(2,$age) && $item['age']>=20 && $item['age']<=45){
+                    $result[]=$item;
+                }
+                else if(in_array(1,$age) && in_array(3,$age)){
+                    if($item['age']>=20 && $item['age']<=35 || $item['age']>=45 && $item['age']<=100){
+                        $result[]=$item;
+                    }
+                }
+                else if(in_array(2,$age) && in_array(3,$age) && $item['age']>=45 && $item['age']<=100){
+                    $result[]=$item;
+                }
+            }
+        }
+//        echo "<pre>";
+//        print_r($offer);
+//        echo "------------------------------------";
+//        print_r($result);
+
+        return $result;
+
+//        for($i=0;$i<$countAge;$i++){
+//            if($age[$i]['id']==$i+1){
+//                $age[$i]['isActive']=true;
+//            }
+//        }
+//        if($countAge==1){
+//            $offer=Offer::whereIn("traffic_network",$traffic)
+//                ->where([
+//                    ['exp',"=","{$exp}"]
+//                ])
+//                ->whereBetween('age',[20,35])
+//                ->orwhereBetween('age',[35,40])
+//                ->get();
+
+//            $offer=Offer::whereIn("traffic_network",$traffic)
+//                ->where([
+//                    ['exp',"=","{$exp}"]
+//                ])
+//                ->whereBetween('age',$age[0]['value'])
+//                ->get();
+//        }
+//        else if($countAge==2){
+//
+//        }
+
+//        foreach ($age as $item){
+//            if($item==1){
+//                $isCheckAge1=true;
+//                $item['isActive']=true;
+//            }
+//            else if($item==2){
+//                $isCheckAge2=true;
+//            }
+//            else if($item==3){
+//                $isCheckAge3=true;
+//            }
+//        }
+//        if($countAge==1){
+//            echo "chi co mot";
+//        }
+//        return $age;
 
 
-        return  response()->json($offer);
+//        $offer=Offer::whereIn("traffic_network",$traffic)
+//            ->where([
+//                ['exp',"=","{$exp}"]
+//            ])
+//            ->whereBetween('age',[[35,40],[20,35]])
+//            ->get();
+
+//        ["traffic_network", "LIKE", "%{$traffic_network}%"],
+//        dd($request);
+
+//        return $request->input('tags');
+
+//        $result=$offer;
+//        return  response()->json($result);
+
     }
 
     function index(Request $request)
