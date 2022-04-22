@@ -47,6 +47,17 @@ class OfferController extends Controller
         $payout=$request->payout;
         $type=$request->type;
 
+
+        $ar=$request->ar;
+        $cr=$request->cr;
+        $epc=$request->epc;
+        $classfy=$request->classfy;
+
+
+        if(empty($classfy)){
+            $classfy=0;
+        }
+
         if($exp=='1'){
             $exp='newbie';
         }
@@ -109,38 +120,155 @@ class OfferController extends Controller
         else{
             $offer_check=$offer;
         }
-        
+
         if(count($offer_check)>=1 && count($offer_check)<=3){
+            echo "nho hon 3";
             $result=$offer_check;
         }
         else if(count($offer_check)>3){
+            echo "So luong-".count($offer_check);
             $offer_priority = [];
             $offer_no_priority = [];
-            foreach ($offer as $item) {
+            foreach ($offer_check as $item) {
                 if ($item['priority'] != 10) {
                     $offer_priority[] = $item;
                 } else {
                     $offer_no_priority[] = $item;
                 }
-            }
-            if(count($offer_priority)>=1 && count($offer_priority)>=3){
 
             }
 
-            print_r($offer_priority);
-            echo "--------------------------------------------------------------------------------------------------";
-            print_r($offer_no_priority);
+            if(count($offer_priority)>=1 && count($offer_priority)<=3){
+                echo "nho hon hoac bang 2";
+                $result=$offer_priority;
+                $count_offer_priority=count($offer_priority);
+                $count_missing=3-$count_offer_priority;
+                if(empty($payout)){
+                    if(!empty($ar) && !empty($cr) && !empty($epc)){
+                        echo "payut-rong va ton tai thong tin chi tiet";
+                        $array=[];
+                        foreach ($offer_no_priority as $item){
+                            if($item['conversion_rate']>=$cr && $item['approved_rate']>=$ar && $item['epc']>=$epc && $item['classfy']==$classfy){
+                                $array[]=$item;
+                            }
+                        }
+                        $array=collect($array)->sortBy('payout')->toArray();
+                        $array = array_slice($array, 0, $count_missing);
+                        $result = array_merge($result, $array);
+                    }
+                    else{
+                        echo "payut-rong";
+                        $array = collect($offer_no_priority)->sortBy('payout')->reverse()->toArray();
+                        $array = array_slice($array, 0, $count_missing);
+                        $result = array_merge($result, $array);
+                    }
+                }
+                else if(!empty($payout)){
+                    if(!empty($ar) && !empty($cr) && !empty($epc) && !empty($classfy)){
+                        $array=[];
+                        foreach ($offer_no_priority as $item){
+                            if($item['payout']>=$payout && $item['conversion_rate']>=$cr && $item['approved_rate']>=$ar && $item['epc']>=$epc && $item['classfy']==$classfy){
+                                $array[]=$item;
+                            }
+                        }
+                        $array=collect($array)->sortBy('payout')->toArray();
+                        $array = array_slice($array, 0, $count_missing);
+                        $result = array_merge($result, $array);
+                    }
+                    else{
+                        $array=[];
+                        foreach ($offer_no_priority as $item){
+                            if($item['payout']>=$payout){
+                                $array[]=$item;
+                            }
+                        }
+                        $array=collect($array)->sortBy('payout')->toArray();
+                        $array = array_slice($array, 0, $count_missing);
+                        $result = array_merge($result, $array);
+                    }
+                }
+            }
+
+            else if(count($offer_priority)>3){
+                $offer_priority_min_first=[];
+                $offer_priority_max_first=[];
+                $min=$offer_priority[0]['priority'];
+
+                foreach ($offer_priority as $item) {
+                    if ($item['priority'] == $min) {
+                        $offer_priority_min_first[] = $item;
+                    } else {
+                        $offer_priority_max_first[] = $item;
+                    }
+                }
+echo $min."lan mot xuat hien - ".count($offer_priority_min_first)."----";
+
+                if(count($offer_priority_min_first)==1){
+                    $result=$offer_priority_min_first;
+                    $offer_priority_min_second=[];
+                    $offer_priority_max_second=[];
+                    $min=$offer_priority_max_first[0]['priority'];
+
+                    foreach ($offer_priority_max_first as $item) {
+                        if ($item['priority'] == $min) {
+                            $offer_priority_min_second[] = $item;
+                        } else {
+                            $offer_priority_max_second[] = $item;
+                        }
+                    }
+                    if(count($offer_priority_min_second)==1){
+                        $result = array_merge($result, $offer_priority_min_second);
+                        $offer_priority_min_second=[];
+                        $offer_priority_max_second=[];
+                    }
+
+                }
+
+
+            }
+//            return $offer_priority;
+
+//            print_r($offer_priority);
+//            echo "--------------------------------------------------------------------------------------------------";
+//            print_r($offer_no_priority);
         }
-    
+//        echo "-----------------------------------------------------------";
+//        foreach ($offer_check as $item){
+//            echo $item['name'].'-';
+//            echo $item['priority'];
+//            echo "-----------------------------------------------------------";
+//        }
 
-       
 
 
 
-        // return $offer_check;
+//        $filtered = collect($result)->filter(function ($value, $key) {
+//            if($value['payout'] && $value['age']>10){
+//                return $value['payout'] > 20;
+//            }
+//        });
 
+//       return $filtered;
+//       print_r($filtered);
+
+//        $collection = collect($result);
+
+//        return $filtered = $collection->filter(function ($item, $key) {
+//            echo $item['payout'];
+//            if($item->payout > 30){
+//                return $item;
+//            }
+//            echo $item;
+//            echo $item->payout;
+//            return $item->payout > 30;
+//        });
+
+//        $result=$filtered;
+//
+        return $result;
+
+//        return $offer_check;
 //        return  response()->json($result);
-
     }
 
     function index(Request $request)
