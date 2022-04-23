@@ -16,11 +16,18 @@ class CreateFormDataTable extends Migration
         Schema::create('form_data', function (Blueprint $table) {
             $table->id();
             $table->string('email');
+            $table->string('traffic');
+            $table->string('age');
             $table->string('tags');
             $table->string('country');
-            $table->integer('age');
-            $table->string('social_network');
-            $table->string('exp');
+            $table->integer('type');
+            $table->integer('quantity');
+            $table->float('payout');
+            $table->float('ar');
+            $table->float('cr');
+            $table->float('epc');
+            $table->integer('classfy');
+            $table->integer('exp');
             $table->timestamps();
         });
     }

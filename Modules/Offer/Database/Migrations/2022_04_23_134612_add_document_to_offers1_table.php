@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddPriceToFormDataTable extends Migration
+class AddDocumentToOffers1Table extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddPriceToFormDataTable extends Migration
      */
     public function up()
     {
-        Schema::table('form_data', function (Blueprint $table) {
-            $table->float('price')->nullable();
+        Schema::table('offers1', function (Blueprint $table) {
+            $table->string('document')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddPriceToFormDataTable extends Migration
      */
     public function down()
     {
-        Schema::table('form_data', function (Blueprint $table) {
-            $table->dropColumn('price');
+        Schema::table('offers1', function (Blueprint $table) {
+            $table->dropColumn('document');
         });
     }
 }

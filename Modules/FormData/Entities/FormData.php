@@ -11,14 +11,18 @@ class FormData extends Model
     protected $table = 'form_data';
     protected $fillable = [
         'email',
+        'traffic',
+        'age',
         'tags',
         'country',
-        'age',
-        'traffic_network',
-        'exp',
-        'scale',
-        'price'
-
+        'type',
+        'quantity',
+        'payout',
+        'ar',
+        'cr',
+        'epc',
+        'classfy',
+        "exp",
     ];
 
     protected static function newFactory()
@@ -27,10 +31,3 @@ class FormData extends Model
     }
 }
 
-// "tags" : "health",
-// "country" : "thailand",
-// "age" : "28",
-// "traffic_network" : "facebook",
-// "exp" : "2",
-// "scale" : "all",
-// "price" : "28"
